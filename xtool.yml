@@ -1,0 +1,6 @@
+version: 1
+# Must be unique on Apple's side; change the suffix if Xcode/xtool says it's taken.
+bundleID: app.marquee.player.q7k2
+product: Marquee
+iconPath: Resources/AppIcon.png
+infoPath: Info.plist
