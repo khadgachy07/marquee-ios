@@ -35,10 +35,10 @@ struct LoginView: View {
                 }
 
                 VStack(alignment: .leading, spacing: 8) {
-                    Text(serverName.map { "Connected to \($0)" } ?? "Jellyfin server")
+                    Text(serverName.map { "Connected to \($0)" } ?? "Your Jellyfin server")
                         .font(.footnote).foregroundStyle(.secondary)
                     HStack {
-                        TextField("http://server:8096", text: $serverText)
+                        TextField(AppModel.exampleServer, text: $serverText)
                             .keyboardType(.URL)
                             .textInputAutocapitalization(.never)
                             .autocorrectionDisabled()
@@ -47,7 +47,11 @@ struct LoginView: View {
                             .textFieldStyle(.roundedBorder)
                         Button(connecting ? "…" : "Connect") { Task { await connect() } }
                             .buttonStyle(.bordered)
-                            .disabled(connecting)
+                            .disabled(connecting || serverText.trimmingCharacters(in: .whitespaces).isEmpty)
+                    }
+                    if serverName == nil {
+                        Text("The address you use to open Jellyfin in a browser, like \(AppModel.exampleServer) or https://jellyfin.example.com. Include any path after the host.")
+                            .font(.caption).foregroundStyle(.secondary)
                     }
                 }
                 .padding(.horizontal)
@@ -56,7 +60,8 @@ struct LoginView: View {
             .frame(maxWidth: .infinity)
         }
         .task {
-            serverText = model.client.server.absoluteString
+            guard let saved = model.savedServer else { return }
+            serverText = saved.absoluteString
             await connect()
         }
         .sheet(item: $signInTarget) { target in
@@ -94,12 +99,11 @@ struct LoginView: View {
     }
 
     private func connect() async {
-        let text = serverText.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard let url = URL(string: text), let scheme = url.scheme?.lowercased(),
-              scheme == "http" || scheme == "https", url.host != nil else {
-            error = "Enter the full server address, like \(AppModel.defaultServer.absoluteString)"
+        guard let url = JellyfinClient.serverURL(from: serverText) else {
+            error = "Enter your server’s address, like \(AppModel.exampleServer)"
             return
         }
+        serverText = url.absoluteString
         connecting = true
         defer { connecting = false }
         model.setServer(url)
@@ -111,7 +115,7 @@ struct LoginView: View {
         } catch {
             serverName = nil
             users = []
-            self.error = "Couldn’t reach Jellyfin at that address. Is Tailscale on? (\(error.localizedDescription))"
+            self.error = "Couldn’t reach Jellyfin at that address. Check it, and that this phone can reach the server (same Wi-Fi, VPN on, or a public address). (\(error.localizedDescription))"
         }
     }
 

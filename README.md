@@ -1,25 +1,37 @@
 # Marquee for iOS
 
-A native iPhone app for your Jellyfin server, in the style of the Marquee web app.
+A native iPhone app for [Jellyfin](https://jellyfin.org), the free self-hosted media server.
+Bring your own server: Marquee doesn't come with one and doesn't send anything anywhere else.
 
-- **Sign in**: "Who's watching?" profiles from your server, password if the profile has one.
-  The access token is kept in the iOS Keychain.
+- **Sign in**: enter your server's address, then pick a "Who's watching?" profile (password if the
+  profile has one). The access token is kept in the iOS Keychain.
 - **Home**: a billboard, Continue Watching, Next Up, My List, and New in each movie/TV library.
 - **Title pages**: Play/Resume, add to My List, overview, seasons and episodes, More Like This.
-- **Search** and **My List** tabs.
+- **Search**, **My List** and **Downloads** tabs.
 - **Player**: Apple's own full-screen player (AVPlayer): resumes where you left off, reports progress
   to Jellyfin, plays the next episode automatically, Picture in Picture, AirPlay, lock-screen controls,
-  and Apple's subtitle menu for subtitles Jellyfin includes in the stream.
+  and subtitles.
 
-Default server: `http://your-server:8099/jellyfin` (placeholder: replace `your-server` with your Jellyfin/Marquee host).
-You can type another address on the sign-in screen.
+## Connecting to your server
+
+On first launch, type the address you use to open Jellyfin in a browser:
+
+| Your setup | Address to enter |
+| --- | --- |
+| Same Wi-Fi as the server | `http://192.168.1.10:8096` (your server's local IP; 8096 is Jellyfin's default port) |
+| Reverse proxy / domain | `https://jellyfin.example.com`, plus any sub-path, e.g. `https://example.com/jellyfin` |
+| VPN (Tailscale, WireGuard, ...) | the server's VPN address, e.g. `http://100.x.y.z:8096` |
+
+`http://` is added if you leave it out. The phone has to be able to reach the server: on the same network,
+with the VPN on, or over the internet. Plain HTTP is allowed because most home servers don't have HTTPS.
+The app remembers the address; sign out to change it. Requires Jellyfin 10.9 or newer.
 
 ## Layout
 
 - `Sources/MarqueeCore`: Jellyfin API client, models, device profile. Plain Foundation; tested with `swift test`
-  on Linux or macOS (`MARQUEE_TEST_SERVER=http://your-server:8099/jellyfin swift test` also checks the live server).
+  on Linux or macOS (`MARQUEE_TEST_SERVER=http://192.168.1.10:8096 swift test` also checks a live server).
 - `Sources/Marquee`: the SwiftUI app and player (iOS only).
-- `xtool.yml` (bundle ID, icon) and `Info.plist` (background audio, HTTP allowed).
+- `xtool.yml` (bundle ID, icon) and `Info.plist` (background audio, HTTP allowed, local network access).
 
 ## Build on a Mac (free Apple ID is enough)
 

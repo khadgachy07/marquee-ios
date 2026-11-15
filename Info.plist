@@ -10,8 +10,8 @@
     <array>
         <string>audio</string>
     </array>
-    <!-- Jellyfin is reached over plain HTTP on your Tailscale network (by IP address, which ATS
-         exceptions can't name), so allow HTTP. Remove this if you move to HTTPS. -->
+    <!-- Most home Jellyfin servers are plain HTTP on a LAN or VPN address, which ATS exceptions
+         can't name, so allow HTTP. HTTPS servers work either way. -->
     <key>NSAppTransportSecurity</key>
     <dict>
         <key>NSAllowsArbitraryLoads</key>

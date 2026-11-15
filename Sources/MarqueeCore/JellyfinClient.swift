@@ -34,7 +34,7 @@ public enum PlaybackEvent: Sendable {
 
 /// Minimal Jellyfin API client (10.9+ routes). A value type: copy it, set `token`/`userId` after sign-in.
 public struct JellyfinClient: Sendable {
-    /// Base address, e.g. http://your-server:8099/jellyfin (Marquee's proxy) or http://host:8096.
+    /// Base address, e.g. http://192.168.1.10:8096 or https://jellyfin.example.com (include any sub-path).
     public var server: URL
     public let deviceId: String
     public let deviceName: String
@@ -52,6 +52,18 @@ public struct JellyfinClient: Sendable {
         self.deviceName = deviceName
         self.token = token
         self.userId = userId
+    }
+
+    /// Turns what someone types into a server URL: trims spaces, adds `http://` when no scheme is given,
+    /// and drops trailing slashes. Nil unless it ends up an http(s) URL with a host.
+    public static func serverURL(from text: String) -> URL? {
+        var s = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !s.isEmpty else { return nil }
+        if !s.contains("://") { s = "http://" + s }
+        while s.hasSuffix("/") { s.removeLast() }
+        guard let url = URL(string: s), let scheme = url.scheme?.lowercased(),
+              scheme == "http" || scheme == "https", let host = url.host, !host.isEmpty else { return nil }
+        return url
     }
 
     // MARK: - Plumbing

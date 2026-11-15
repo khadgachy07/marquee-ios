@@ -9,22 +9,30 @@ import UIKit
 @MainActor
 @Observable
 final class AppModel {
-    /// Placeholder default: replace `your-server` with your host, or type it on the sign-in screen.
-    static let defaultServer = URL(string: "http://your-server:8099/jellyfin")!
+    /// Example shown in the address field; there is no built-in server.
+    static let exampleServer = "http://192.168.1.10:8096"
+    /// Stand-in until someone enters their server; never contacted (the sign-in screen asks first).
+    private static let unsetServer = URL(string: "http://localhost:8096")!
 
     private(set) var client: JellyfinClient
     private(set) var user: UserDto?
 
     var isSignedIn: Bool { user != nil && client.token != nil }
 
+    /// The server this phone last connected to, if any.
+    var savedServer: URL? {
+        UserDefaults.standard.string(forKey: "server").flatMap(JellyfinClient.serverURL(from:))
+    }
+
     init() {
         let defaults = UserDefaults.standard
+        let savedServer = defaults.string(forKey: "server").flatMap(JellyfinClient.serverURL(from:))
         var deviceId = defaults.string(forKey: "deviceId") ?? ""
         if deviceId.isEmpty {
             deviceId = UUID().uuidString
             defaults.set(deviceId, forKey: "deviceId")
         }
-        let server = defaults.string(forKey: "server").flatMap(URL.init(string:)) ?? Self.defaultServer
+        let server = savedServer ?? Self.unsetServer
         var client = JellyfinClient(server: server, deviceId: deviceId, deviceName: UIDevice.current.name)
 
         var savedUser: UserDto?

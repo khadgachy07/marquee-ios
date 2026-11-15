@@ -202,7 +202,16 @@ final class MarqueeCoreTests: XCTestCase {
         XCTAssertEqual(Format.resumeSeconds(movie), 0)
     }
 
-    /// Live check against a real server: MARQUEE_TEST_SERVER=http://your-server:8099/jellyfin swift test
+    func testServerURLFromTypedText() {
+        XCTAssertEqual(JellyfinClient.serverURL(from: " 192.168.1.10:8096/ ")?.absoluteString, "http://192.168.1.10:8096")
+        XCTAssertEqual(JellyfinClient.serverURL(from: "https://jf.example.com/jellyfin//")?.absoluteString, "https://jf.example.com/jellyfin")
+        XCTAssertEqual(JellyfinClient.serverURL(from: "HTTP://Media.local:8096")?.host, "Media.local")
+        XCTAssertNil(JellyfinClient.serverURL(from: ""))
+        XCTAssertNil(JellyfinClient.serverURL(from: "ftp://jf.example.com"))
+        XCTAssertNil(JellyfinClient.serverURL(from: "http://"))
+    }
+
+    /// Live check against a real server: MARQUEE_TEST_SERVER=http://192.168.1.10:8096 swift test
     func testLivePublicEndpoints() async throws {
         guard let base = ProcessInfo.processInfo.environment["MARQUEE_TEST_SERVER"], let url = URL(string: base) else {
             throw XCTSkip("set MARQUEE_TEST_SERVER to run")

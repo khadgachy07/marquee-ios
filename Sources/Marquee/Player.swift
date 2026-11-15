@@ -260,7 +260,7 @@ final class PlaybackSession: NSObject, @preconcurrency AVPlayerViewControllerDel
         }
     }
 
-    /// The item from the server, or nil if it doesn't answer within 3 s (offline, or Tailscale down).
+    /// The item from the server, or nil if it doesn't answer within 3 s (offline, or the server is unreachable).
     private func quickFetch(_ id: String) async -> Item? {
         let client = client
         return await quick { try await client.item(id) }
