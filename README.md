@@ -60,3 +60,7 @@ With a free Apple ID the app stops opening after **7 days**; plug in the phone a
 - Choosing audio tracks or other subtitles: the player uses the file's default audio and default subtitles
   (switch subtitles off in Apple's menu). Picking others would need the stream reloaded.
 - Skip Intro, trickplay thumbnails, cast pages, genre rows.
+
+## License
+
+[MIT](LICENSE). Marquee is an independent project, not affiliated with Jellyfin.
