@@ -50,7 +50,7 @@ struct LoginView: View {
                             .disabled(connecting || serverText.trimmingCharacters(in: .whitespaces).isEmpty)
                     }
                     if serverName == nil {
-                        Text("The address you use to open Jellyfin in a browser, like \(AppModel.exampleServer) or https://jellyfin.example.com. Include any path after the host.")
+                        Text(verbatim: "The address you use to open Jellyfin in a browser, like \(AppModel.exampleServer) or https://jellyfin.example.com. Include any path after the host.")
                             .font(.caption).foregroundStyle(.secondary)
                     }
                 }
@@ -105,6 +105,7 @@ struct LoginView: View {
         }
         serverText = url.absoluteString
         connecting = true
+        error = nil
         defer { connecting = false }
         model.setServer(url)
         do {
